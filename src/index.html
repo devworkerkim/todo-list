@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToDo List | The Odin Project</title>
+</head>
+<body>
+    <h1>ToDo List | The Odin Project</h1>
+    <div>
+        <label>Project:</label>
+        <select name="projects" id="projects"></select>
+        <button id="addProjectBtn">Add Project</button>
+        <button id="editProjectBtn">Edit Project</button>
+        <button id="deleteProjectBtn">Delete Project</button>
+    </div>
+    <div>
+        <h2>Add ToDo</h2>
+        <label>Title: <input type="text" id="addNote__title"></label>
+        <label>Description: <input type="text" id="addNote__description"></label>
+        <label>Due Date: <input type="date" id="addNote__date"></label>
+        <label>Priority: <input type="number" id="addNote__priority"></label>
+        <button id="addToDoBtn">Add ToDo</button>
+    </div>
+    <div>
+        <h2>Edit ToDo</h2>
+        <label>Title: <input type="text" id="editNote__title"></label>
+        <label>Description: <input type="text" id="editNote__description"></label>
+        <label>Due Date: <input type="date" id="editNote__date"></label>
+        <label>Priority: <input type="number" id="editNote__priority"></label>
+        <button id="cancelEditsBtn">Cancel</button>
+        <button id="saveEditsBtn">Save</button>
+    </div>
+    <div id="toDoList"></div>
+</body>
+</html>
