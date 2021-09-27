@@ -21,15 +21,15 @@ const Project = (title) => {
     
     const generator = infinite();
     
-    const ToDo = (title, description, completeDate, priority) => {
+    const ToDo = (title, description, completeDate, priority, completed = false) => {
         const id = generator.next().value;
-        let completed = false;
         const getNote = () => {
             return {id, title, description, completeDate, priority, completed};
         }
     
         const toggleCompleted = () => {
             completed = !completed;
+            saveData();
         }
 
         const editToDo = () => {
@@ -53,15 +53,15 @@ const Project = (title) => {
             toDoList.splice(toDoList.findIndex((element) => element.getNote().id === id), 1);
             display();
         }
-    
+        
         return { getNote, toggleCompleted, editToDo, removeToDo };
     }
 
     const getTitle = () => title;
     const getToDoList = () => toDoList;
 
-    const addToDo = (title, description, completeDate, priority) => {
-        toDoList.push(ToDo(title, description, completeDate, priority));
+    const addToDo = (title, description, completeDate, priority, completed) => {
+        toDoList.push(ToDo(title, description, completeDate, priority, completed));
         display();
     }
 
@@ -77,7 +77,7 @@ const Project = (title) => {
         displayProjects();
     }
 
-    return { getTitle, getToDoList, addToDo, editProjectTitle, deleteProject };
+    return { getTitle, getToDoList, addToDo, editProjectTitle, deleteProject, saveData };
 }
 
 function displayProjects(selectProject) {
@@ -90,12 +90,38 @@ function displayProjects(selectProject) {
         option.innerText = project.getTitle();
         if (project.getTitle() === selectProject) option.setAttribute('selected', true);
         projectList.appendChild(option);
-        display();
     });
+    display();
+}
+
+function saveData() {
+    const savedData = [];
+    myProjects.forEach((project) => {
+        const savedToDoItems = []
+        project.getToDoList().forEach((todoItem) => {
+            savedToDoItems.push(todoItem.getNote())
+        });
+        savedData.push({title: project.getTitle(), ...savedToDoItems})
+    });
+    localStorage.setItem('myProjects', JSON.stringify(savedData));
 }
 
 const myProjects = [];
-myProjects.push(Project('default'));
+if (!localStorage.getItem('myProjects') || localStorage.getItem('myProjects') === '[]') {
+    myProjects.push(Project('default'));
+}
+else {
+    const loadData = JSON.parse(localStorage.getItem('myProjects'));
+    loadData.forEach((project, ind) => {
+        myProjects.push(Project(project.title));
+        if (ind === 0) displayProjects(myProjects[0].getTitle());
+        Object.values(project).forEach((value) => {
+            if (typeof value === 'object') {
+                myProjects[ind].addToDo(value.title, value.description, value.completeDate, value.priority, value.completed);
+            }
+        });
+    });
+}
 displayProjects();
 
 document.querySelector('#addProjectBtn').addEventListener('click', () => {
@@ -123,6 +149,10 @@ function display() {
     while (content.firstChild) {
         content.removeChild(content.firstChild);
     }
+    if (myProjects.findIndex((element) => element.getTitle() === projectList.value) === -1) {
+        saveData();
+        return;
+    }
     myProjects[myProjects.findIndex((element) => element.getTitle() === projectList.value)].getToDoList().forEach((item) => {
         const div = document.createElement('div');
         const todoContent = item.getNote();
@@ -146,6 +176,7 @@ function display() {
         div.appendChild(deleteBtn);
         content.appendChild(div);
     });
+    saveData();
 }
 
 document.querySelector('#addToDoBtn').addEventListener('click', () => {
